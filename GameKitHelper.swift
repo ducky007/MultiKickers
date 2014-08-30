@@ -10,17 +10,16 @@ import Foundation
 import GameKit
 
 class GameKitHelper : UIViewController {
-    func authenticateLocalPlayer(){
-        let localPlayer = GKLocalPlayer()
+    func authenticateLocalPlayer() {
+        var localPlayer = GKLocalPlayer.localPlayer()
         
-        localPlayer.authenticateHandler = {(viewController : UIViewController!, error) -> Void in
+        localPlayer.authenticateHandler = {(viewController:UIViewController!, error:NSError!) -> Void in
             if((viewController) != nil) {
                 self.presentViewController(viewController, animated: true, completion: nil)
-            }else if (localPlayer.authenticated){
-                println("Local player already authenticated");
+            } else if (localPlayer.authenticated){
+                println("Local player already authenticated")
             } else {
-                println("Local player could not be authenticated, disabling GameCenter");
-                
+                println("Local player could not be authenticated, disabling GameCenter")
             }
         }
     }

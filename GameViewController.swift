@@ -28,9 +28,23 @@ class GameViewController: UIViewController {
                 self.presentViewController(viewController, animated: true, completion: nil)
             } else if (localPlayer.authenticated){
                 println("Local player already authenticated")
+                self.showMatchMaker()
             } else {
                 println("Local player could not be authenticated, disabling GameCenter")
             }
         }
+        
+        
+    }
+
+    func showMatchMaker() {
+        println("match making ......")
+        var matchRequest = GKMatchRequest()
+        matchRequest.minPlayers = 2
+        matchRequest.maxPlayers = 2
+        matchRequest.defaultNumberOfPlayers = 2
+        
+        var mmvc: GKMatchmakerViewController = GKMatchmakerViewController(matchRequest: matchRequest)
+        self.presentViewController(mmvc, animated: true, completion: nil)
     }
 }
