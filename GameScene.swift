@@ -11,6 +11,7 @@ import GameKit
 
 class GameScene: SKScene {
     override func didMoveToView(view: SKView) {
+        println("I am in ..........")
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

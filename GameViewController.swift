@@ -12,7 +12,7 @@ import GameKit
 
 
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, GKTurnBasedMatchmakerViewControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +36,17 @@ class GameViewController: UIViewController {
         
         
     }
+    
+    func joinTurnBasedMatch() {
+        println("Turn Based Match")
+        var mr = GKMatchRequest()
+        mr.minPlayers = 2
+        mr.maxPlayers = 2
+        mr.defaultNumberOfPlayers = 2
+        
+        var tbvc = GKTurnBasedMatchmakerViewController(matchRequest: mr)
+        tbvc.turnBasedMatchmakerDelegate = self
+    }
 
     func showMatchMaker() {
         println("match making ......")
@@ -46,5 +57,35 @@ class GameViewController: UIViewController {
         
         var mmvc: GKMatchmakerViewController = GKMatchmakerViewController(matchRequest: matchRequest)
         self.presentViewController(mmvc, animated: true, completion: nil)
+    }
+    
+    
+    // The user has cancelled
+    func turnBasedMatchmakerViewControllerWasCancelled(viewController: GKTurnBasedMatchmakerViewController!) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    // Matchmaking has failed with an error
+    func turnBasedMatchmakerViewController(viewController: GKTurnBasedMatchmakerViewController!, didFailWithError error: NSError!) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    // A turned-based match has been found, the game should start
+    func turnBasedMatchmakerViewController(viewController: GKTurnBasedMatchmakerViewController!, didFindMatch match: GKTurnBasedMatch!) {
+        println("Yeah......")
+        self.dismissViewControllerAnimated(true, completion: nil)
+        self.performSegueWithIdentifier("GameScene", sender: match)
+    }
+    
+    // Called when a users chooses to quit a match and that player has the current turn.  The developer should call playerQuitInTurnWithOutcome:nextPlayer:matchData:completionHandler: on the match passing in appropriate values.  They can also update matchOutcome for other players as appropriate.
+    func turnBasedMatchmakerViewController(viewController: GKTurnBasedMatchmakerViewController!, playerQuitForMatch match: GKTurnBasedMatch!) {
+        println("Quit.....")
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+        if segue.identifier == "GameScene" {
+            var gameVC = segue.destinationViewController as MyGamePlayViewController
+            //gameVC.view
+        }
     }
 }
