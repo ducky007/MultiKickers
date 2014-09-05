@@ -14,26 +14,45 @@ import GameKit
 
 class MyGamePlayViewController: UIViewController {
     
-    var tbMatch:GKTurnBasedMatch!
+    var currentMatch:GKTurnBasedMatch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         println("my game play")
+    
         self.loadAndDisplayMatchData()
     }
     
     func loadAndDisplayMatchData() {
         println("load data")
-        self.tbMatch.loadMatchDataWithCompletionHandler { (matchData:NSData!, matchError:NSError!) -> Void in
+        self.currentMatch.loadMatchDataWithCompletionHandler { (matchData:NSData!, matchError:NSError!) -> Void in
+            var nextParticipant:GKTurnBasedParticipant!
             if (matchData != nil) {
                 println("MD: \(matchData)")
+                println("participants: \(self.currentMatch.participants.count)")
+                println("current participant: \(self.currentMatch.currentParticipant.player)")
+                for participant in self.currentMatch.participants {
+                    println("list par: \(participant.description)")
+                    if participant.playerID == self.currentMatch.currentParticipant {
+                        break
+                    }
+                    nextParticipant = participant as GKTurnBasedParticipant
+                }
             }
             
             if matchData.length > 0 {
-                println("some data matchID: \(self.tbMatch.matchID)")
+                println("some data matchID: \(self.currentMatch.matchID)")
             } else {
-                println("no data yet matchID: \(self.tbMatch.matchID)")
+                println("no data yet matchID: \(self.currentMatch.matchID)")
             }
+            
+            var message:NSString = "======= hello friend ======="
+            
+            var updatedMatchData:NSData = message.dataUsingEncoding(NSUTF8StringEncoding)!
+            
+            self.currentMatch.endTurnWithNextParticipants([nextParticipant], turnTimeout:1000.0, matchData:updatedMatchData, completionHandler: { (matchError:NSError!) -> Void in
+                println("error:\(matchError)")
+            })
         }
     }
 }
