@@ -10,17 +10,48 @@ import UIKit
 import SpriteKit
 import GameKit
 
-
+extension SKNode {
+    class func unarchiveFromFile(file : NSString) -> SKNode? {
+        if let path = NSBundle.mainBundle().pathForResource(file, ofType: "sks") {
+            var sceneData = NSData.dataWithContentsOfFile(path, options: .DataReadingMappedIfSafe, error: nil)
+            var archiver = NSKeyedUnarchiver(forReadingWithData: sceneData)
+            
+            archiver.setClass(self.classForKeyedUnarchiver(), forClassName: "SKScene")
+            let scene = archiver.decodeObjectForKey(NSKeyedArchiveRootObjectKey) as GameScene
+            archiver.finishDecoding()
+            return scene
+        } else {
+            return nil
+        }
+    }
+}
 
 class MyGamePlayViewController: UIViewController {
     
     var currentMatch:GKTurnBasedMatch!
+    var nextParticipant = [GKTurnBasedParticipant]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         println("my game play")
     
         self.loadAndDisplayMatchData()
+        
+        if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
+            // Configure the view.
+            let skView = self.view as SKView
+            skView.showsFPS = true
+            skView.showsNodeCount = true
+            
+            /* Sprite Kit applies additional optimizations to improve rendering performance */
+            skView.ignoresSiblingOrder = true
+            skView.showsPhysics = true
+            
+            /* Set the scale mode to scale to fit the window */
+            scene.scaleMode = .AspectFill
+            
+            skView.presentScene(scene)
+        }
     }
     
     func loadAndDisplayMatchData() {
@@ -45,14 +76,16 @@ class MyGamePlayViewController: UIViewController {
             } else {
                 println("no data yet matchID: \(self.currentMatch.matchID)")
             }
-            
-            var message:NSString = "======= hello friend ======="
-            
-            var updatedMatchData:NSData = message.dataUsingEncoding(NSUTF8StringEncoding)!
-            
-            self.currentMatch.endTurnWithNextParticipants([nextParticipant], turnTimeout:1000.0, matchData:updatedMatchData, completionHandler: { (matchError:NSError!) -> Void in
-                println("error:\(matchError)")
-            })
         }
+    }
+    
+    func sendData() {
+        var message:NSString = "======= hello friend ======="
+        
+        var updatedMatchData:NSData = message.dataUsingEncoding(NSUTF8StringEncoding)!
+        
+        self.currentMatch.endTurnWithNextParticipants([nextParticipant], turnTimeout:1000.0, matchData:updatedMatchData, completionHandler: { (matchError:NSError!) -> Void in
+            println("error:\(matchError)")
+        })
     }
 }

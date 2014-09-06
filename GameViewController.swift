@@ -15,7 +15,7 @@ import GameKit
 class GameViewController: UIViewController, GKTurnBasedMatchmakerViewControllerDelegate {
 
     override func viewDidLoad() {
-        //super.viewDidLoad()
+        super.viewDidLoad()
 
         self.authenticateLocalPlayer()
     }
@@ -86,8 +86,9 @@ class GameViewController: UIViewController, GKTurnBasedMatchmakerViewControllerD
         // TODO
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
         if segue.identifier == "MyGameScene" {
+            println("prepare for segue")
             var gameVC = segue.destinationViewController as MyGamePlayViewController
             gameVC.currentMatch = sender as GKTurnBasedMatch
         }
